@@ -164,7 +164,7 @@ class Humanoid extends CharacterStats{
             }
             enemy.healthPoints -=point;
             if(enemy.healthPoints>0){
-              return`${this.name} attacks ${enemy.name},${enemy.name}'health point is ${enemy.healthPoints}. `;
+              return`${this.name} attacks ${enemy.name} (- ${point}),${enemy.name}'s health point is ${enemy.healthPoints}. `;
             }else{
               return ` ${enemy.name} dies`;
             }
@@ -187,7 +187,7 @@ class Humanoid extends CharacterStats{
             }
             enemy.healthPoints -=point;
             if(enemy.healthPoints>0){
-              return`${this.name} attacks ${enemy.name},${enemy.name}'health point is ${enemy.healthPoints}. `;
+              return`${this.name} attacks ${enemy.name} (-${point}),${enemy.name}'s health point is ${enemy.healthPoints}. `;
             }else{
               return ` ${enemy.name} dies`;
             }
@@ -231,20 +231,23 @@ class Humanoid extends CharacterStats{
     });
   
     
-    function fight(villain, hero,numOfFlight){
-        
-        for(let i=0; i<numOfFlight;i++){
+    function fight(villain, hero){
+        MaxRoundNum = 1000;
+        roundNum = 0;
+        for(let i=0; i<MaxRoundNum;i++){
             if(villain.healthPoints<=0 || hero.healthPoints<=0){
+                console.log(`Fight end in round ${roundNum}`);
                 break;
             }
             randomNum=Math.floor(Math.random() * 20);;
-            console.log(randomNum);
+            
             if(randomNum%2==0){
                 if(randomNum==2 ||randomNum==18){
                     console.log(hero.attack(villain,"final hit"));
                 }else{
                     console.log(hero.attack(villain,"regular attack"));
                 }
+                
             }else{
                 if(randomNum==5 ||randomNum==17){
                     console.log(villain.attack(hero,"final hit"));
@@ -252,6 +255,7 @@ class Humanoid extends CharacterStats{
                     console.log(villain.attack(hero,"regular attack"));
                 }
             }
+            roundNum++;
             
         
     }
@@ -259,8 +263,8 @@ class Humanoid extends CharacterStats{
     }
     console.log("\nstretch problem"); 
 
-    fight(Troll,Worgen, 100);
-    console.log("Fight Over"); 
+    fight(Troll,Worgen);
+    
     
 
     
