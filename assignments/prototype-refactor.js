@@ -24,31 +24,35 @@ Prototype Refactor
   * dimensions (These represent the character's size in the video game)
   * destroy() // prototype method that returns: `${this.name} was removed from the game.`
 */
-function GameObject(g){
-    this.createdAt = g.createdAt;
-    this.name = g.name;
-    this.dimensions = g.dimensions;
-    
-    };
-  
-  GameObject.prototype.destroy=function(){
-    return `${this.name} was removed from the game.`;
-  };
-  /*
+
+class GameObject{
+    constructor(g){
+        this.createdAt = g.createdAt;
+        this.name = g.name;
+        this.dimensions = g.dimensions;
+     }
+    destroy(){
+             return `${this.name} was removed from the game.`;
+    }
+}
+/*
     === CharacterStats ===
     * healthPoints
     * takeDamage() // prototype method -> returns the string '<object name> took damage.'
     * should inherit destroy() from GameObject's prototype
   */
-  function CharacterStats(c){
-    GameObject.call(this, c);
-    this.healthPoints = c.healthPoints;
-    
+
+  class CharacterStats extends GameObject{
+      constructor(c){
+          super(c);
+          this.healthPoints = c.healthPoints;
+      }
+      takeDamage(){
+          return `${this.name} took damage.`;
+      }
   }
-  CharacterStats.prototype = Object.create(GameObject.prototype);
-  CharacterStats.prototype.takeDamage=function(){
-    return `${this.name} took damage.`;
-  };
+
+
   /*
     === Humanoid (Having an appearance or character resembling that of a human.) ===
     * team
@@ -58,17 +62,19 @@ function GameObject(g){
     * should inherit destroy() from GameObject through CharacterStats
     * should inherit takeDamage() from CharacterStats
   */
-   function Humanoid(h){
-    CharacterStats.call(this, h);
-    this.team = h.team;
-    this.weapons = h.weapons;
-    this.language = h.language;
-   }
-   Humanoid.prototype = Object.create(CharacterStats.prototype);
-   
-   Humanoid.prototype.greet=function(){
-    return `${this.name} offers a greeting in ${this.language}.`
-   };
+class Humanoid extends CharacterStats{
+    constructor(h){
+        super(h);
+        this.team = h.team;
+        this.weapons = h.weapons;
+        this.language = h.language;
+    }
+    greet(){
+        return `${this.name} offers a greeting in ${this.language}.`;
+    }
+}
+
+
   /*
     * Inheritance chain: GameObject -> CharacterStats -> Humanoid
     * Instances of Humanoid should have all of the same properties as CharacterStats and GameObject.
@@ -144,41 +150,53 @@ function GameObject(g){
     // * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.  
     // * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
     // * Create two new objects, one a villain and one a hero and fight it out with methods!
-    function Villain(v){
-      Humanoid.call(this, v);
+    class Villain extends Humanoid{
+        constructor(v){
+            super(v);
+            
+        }
+        attack(enemy, power){
+            let point=0;
+            if(power=="final hit"){
+              point=4;
+            }else{
+              point =2;
+            }
+            enemy.healthPoints -=point;
+            if(enemy.healthPoints>0){
+              return`${this.name} attacks ${enemy.name},${enemy.name}'health point is ${enemy.healthPoints}. `;
+            }else{
+              return ` ${enemy.name} dies`;
+            }
+          };
+          
       
      }
-     Villain.prototype = Object.create(Humanoid.prototype);
      
-     function Hero(s){
-      Humanoid.call(this, s);
+     class Hero extends Humanoid{
+        constructor(v){
+            super(v);
+            
+        }
+        attack(enemy, power){
+            let point=0;
+            if(power=="final hit"){
+              point=5;
+            }else{
+              point =1;
+            }
+            enemy.healthPoints -=point;
+            if(enemy.healthPoints>0){
+              return`${this.name} attacks ${enemy.name},${enemy.name}'health point is ${enemy.healthPoints}. `;
+            }else{
+              return ` ${enemy.name} dies`;
+            }
+          };
+        
       
      }
-    Hero.prototype = Object.create(Humanoid.prototype);
      
-    Humanoid.prototype.attack=function(enemy, power){
-      let point=0;
-      if(power=="final hit"){
-        point=5;
-      }else{
-        point =2;
-      }
-      enemy.healthPoints -=point;
-      if(enemy.healthPoints>0){
-        return`${this.name} attacks ${enemy.name},${enemy.name}'health point is ${enemy.healthPoints}. `;
-      }else{
-        return ` ${enemy.name} dies`;
-      }
-    };
   
-    
-    GameObject.prototype.recover=function(){
-      
-      this.healthPoints +=3;
-      
-        return`${this.name}'s health point +3, ${this.name}'health point is ${this.healthPoints}. `;
-      
-    };
   
   const Troll = new Villain({
       createdAt: new Date(),
@@ -213,23 +231,38 @@ function GameObject(g){
     });
   
     
-    
+    function fight(villain, hero,numOfFlight){
+        
+        for(let i=0; i<numOfFlight;i++){
+            if(villain.healthPoints<=0 || hero.healthPoints<=0){
+                break;
+            }
+            randomNum=Math.floor(Math.random() * 20);;
+            console.log(randomNum);
+            if(randomNum%2==0){
+                if(randomNum==2 ||randomNum==18){
+                    console.log(hero.attack(villain,"final hit"));
+                }else{
+                    console.log(hero.attack(villain,"regular attack"));
+                }
+            }else{
+                if(randomNum==5 ||randomNum==17){
+                    console.log(villain.attack(hero,"final hit"));
+                }else{
+                    console.log(villain.attack(hero,"regular attack"));
+                }
+            }
+            
+        
+    }
+
+    }
     console.log("\nstretch problem"); 
-    console.log(Worgen.attack(Troll,"regular attack")); 
-    console.log(Troll.attack(Worgen,"regular attack"));
-    console.log(Worgen.attack(Troll,"final hit"));
-    console.log(Troll.recover());
-    console.log(Worgen.attack(Troll,"regular attack")); 
-    console.log(Troll.attack(Worgen,"final hit"));
-    console.log(Worgen.recover());
-    console.log(Troll.attack(Worgen,"regular attack"));
-    console.log(Worgen.attack(Troll,"final hit"));
-    console.log(Troll.attack(Worgen,"final hit"));
-    console.log(Worgen.recover());
-    console.log(Troll.attack(Worgen,"regular attack"));
-    console.log(Worgen.attack(Troll,"final hit"));
-    console.log(Troll.attack(Worgen,"final hit"));
-    console.log(Worgen.attack(Troll,"final hit"));
+
+    fight(Troll,Worgen, 100);
+    console.log("Fight Over"); 
+    
+
     
   
     
